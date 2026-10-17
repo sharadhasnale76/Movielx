@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Movielx online video player">
+<title>Movielx — Video Player</title>
+<style>
+:root{--bg:#07111f;--panel:#0e1b2d;--line:#203149;--text:#f4f7fb;--muted:#a9b7c9;--blue:#08a9f4;--yellow:#ffd43b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px max(16px,calc((100% - 1180px)/2));background:#050c16;border-bottom:1px solid var(--line)}
+.logo{font-size:25px;font-weight:800;letter-spacing:-.7px}.logo span{color:var(--blue)}
+header small{color:var(--muted)}
+main{max-width:1180px;margin:18px auto;padding:0 14px}
+.ad{position:relative;background:#101d2d;border:1px dashed #52677f;border-radius:10px;min-height:82px;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;margin:0 0 18px;color:var(--muted);overflow:hidden}
+.ad .tag{position:absolute;top:7px;left:8px;background:var(--yellow);color:#111;font-size:11px;font-weight:bold;padding:3px 6px;border-radius:4px}
+.ad strong{display:block;color:#fff;margin-bottom:5px}.ad p{margin:0;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px}
+h1{font-size:23px;margin:0 0 8px} .meta{color:var(--muted);font-size:14px;margin-bottom:14px}
+.player-wrap{position:relative;background:#000;border-radius:10px;overflow:hidden}
+video{display:block;width:100%;max-height:70vh;aspect-ratio:16/9;background:#000}
+.player-message{color:var(--muted);font-size:13px;line-height:1.5;margin:9px 0 14px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 18px}
+input,button{font:inherit;border-radius:8px;padding:11px 12px}
+input{min-width:0;flex:1;background:#091321;border:1px solid #31435a;color:white}
+button{border:0;background:var(--blue);color:#00101b;font-weight:700;cursor:pointer}
+button.secondary{background:#17283d;color:#fff;border:1px solid #31435a}
+.telegram{background:linear-gradient(100deg,#009fe3,#1766ef);border-radius:10px;padding:18px;margin:18px 0;color:white}
+.telegram p{margin:6px 0 12px;font-size:14px}
+.telegram a{display:inline-block;color:#073052;background:#fff;text-decoration:none;font-weight:bold;padding:10px 14px;border-radius:8px}
+.about{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:16px}
+.about h2{font-size:18px;margin:0 0 8px}.about p{color:var(--muted);line-height:1.6;margin:0}
+.side-ad{min-height:220px;margin-bottom:16px}
+footer{border-top:1px solid var(--line);margin-top:32px;padding:22px 16px;text-align:center;color:var(--muted);font-size:13px}
+.modal{display:none;position:fixed;inset:0;background:#000b;z-index:10;align-items:center;justify-content:center;padding:18px}
+.modal-card{position:relative;background:#102036;border:1px solid #49617c;border-radius:14px;max-width:420px;width:100%;padding:22px;text-align:center}
+.modal-card h2{margin:8px 0}.modal-card p{color:var(--muted);font-size:14px;line-height:1.5}
+.close{position:absolute;right:10px;top:10px;background:#263951;color:#fff;padding:7px 10px}
+.modal-ad{min-height:110px;margin:15px 0;background:#091321;border:1px dashed #52677f;border-radius:8px;padding:16px;display:flex;flex-direction:column;justify-content:center}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:10px}.side-ad{min-height:130px;margin:0}h1{font-size:20px}header{padding:14px 16px}}
+@media(max-width:460px){.sidebar{grid-template-columns:1fr}.ad{min-height:72px}.logo{font-size:22px}}
+</style>
+</head>
+<body>
+<header><div class="logo">▷ Movie<span>lx</span></div><small>Online Video Player</small></header>
+<main>
+  <!-- TOP AD SLOT: replace this placeholder with ad-network code after approval -->
+  <section class="ad" aria-label="Advertisement"><span class="tag">AD</span><div><strong>Top Advertisement</strong><p>Paste your approved ad network's code in this slot.</p></div></section>
+  <div class="layout">
+    <section>
+      <h1>Watch Video Online</h1>
+      <div class="meta">Movielx · Online player · Mobile friendly</div>
+      <div class="player-wrap">
+        <video id="video" controls playsinline preload="metadata" poster="">
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+      <p class="player-message">This player supports a direct video file URL (for example, an MP4 link) that you are allowed to stream. A normal webpage or a private/unsupported link may not play.</p>
+      <div class="controls">
+        <input id="videoUrl" type="url" placeholder="Paste a direct MP4 video URL here" aria-label="Direct video URL">
+        <button id="loadBtn">Load Video</button>
+      </div>
+      <div class="controls">
+        <button class="secondary" id="demoBtn">Load demo video</button>
+        <button class="secondary" id="clearBtn">Clear player</button>
+      </div>
+      <!-- INLINE AD SLOT -->
+      <section class="ad" aria-label="Advertisement"><span class="tag">AD</span><div><strong>Advertisement Slot 2</strong><p>Place your approved banner/ad script here.</p></div></section>
+      <section class="telegram">
+        <strong>Join Our Telegram Channel</strong>
+        <p>Add your own channel link below to help visitors follow your updates.</p>
+        <a id="telegramLink" href="https://t.me/" target="_blank" rel="noopener noreferrer">Join Telegram →</a>
+      </section>
+      <section class="about"><h2>About this page</h2><p>Movielx is a simple video-player page. Only upload or stream videos you own or have permission to distribute. Ad-network approval is required before replacing the ad placeholders with live ads.</p></section>
+      <!-- BOTTOM AD SLOTS -->
+      <div class="sidebar" style="margin-top:16px">
+        <section class="ad"><span class="tag">AD</span><div><strong>Advertisement Slot 3</strong><p>Banner placement</p></div></section>
+        <section class="ad"><span class="tag">AD</span><div><strong>Advertisement Slot 4</strong><p>Banner placement</p></div></section>
+      </div>
+    </section>
+    <aside class="sidebar">
+      <section class="ad side-ad"><span class="tag">AD</span><div><strong>Sidebar Advertisement</strong><p>Advertisement Slot 5</p></div></section>
+      <section class="ad side-ad"><span class="tag">AD</span><div><strong>Promotional Space</strong><p>Add your own promotion or approved ad code.</p></div></section>
+    </aside>
+  </div>
+</main>
+<footer>© <span id="year"></span> Movielx · Privacy · Contact</footer>
+
+<!-- Playback-time ad demo. This is a placeholder, not a paid ad network. -->
+<div class="modal" id="adModal" role="dialog" aria-modal="true" aria-labelledby="adTitle">
+  <div class="modal-card">
+    <button class="close" id="closeAd" aria-label="Close advertisement">Close ×</button>
+    <span class="tag" style="display:inline-block;background:#ffd43b;color:#111;padding:4px 7px;border-radius:4px">ADVERTISEMENT</span>
+    <h2 id="adTitle">Short break</h2>
+    <p>This is a sample in-player ad break. Replace the placeholder below only with an ad solution that explicitly supports video-player ads.</p>
+    <div class="modal-ad"><strong>In-player ad slot</strong><p style="color:#a9b7c9;font-size:13px">Your approved video-ad provider code goes here.</p></div>
+    <button id="resumeBtn">Continue video</button>
+  </div>
+</div>
+<script>
+(() => {
+  const video = document.getElementById('video');
+  const urlInput = document.getElementById('videoUrl');
+  const modal = document.getElementById('adModal');
+  let adShown = false;
+  let pausedByAd = false;
+
+  function loadVideo(url) {
+    if (!url) return;
+    try {
+      const parsed = new URL(url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Invalid protocol');
+      video.src = parsed.href;
+      video.load();
+      adShown = false;
+      modal.style.display = 'none';
+    } catch (e) {
+      alert('Please enter a valid http or https video URL.');
+    }
+  }
+  document.getElementById('loadBtn').addEventListener('click', () => loadVideo(urlInput.value.trim()));
+  urlInput.addEventListener('keydown', e => { if (e.key === 'Enter') loadVideo(urlInput.value.trim()); });
+  document.getElementById('demoBtn').addEventListener('click', () => {
+    urlInput.value = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+    loadVideo(urlInput.value);
+  });
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    video.pause(); video.removeAttribute('src'); video.load(); urlInput.value = ''; adShown = false;
+  });
+  video.addEventListener('timeupdate', () => {
+    if (!adShown && video.currentTime >= 120 && !video.paused) {
+      adShown = true; pausedByAd = true; video.pause(); modal.style.display = 'flex';
+    }
+  });
+  function closeModal() { modal.style.display = 'none'; if (pausedByAd) video.play().catch(() => {}); pausedByAd = false; }
+  document.getElementById('closeAd').addEventListener('click', closeModal);
+  document.getElementById('resumeBtn').addEventListener('click', closeModal);
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // CHANGE THIS to your real Telegram channel URL, e.g. https://t.me/yourchannel
+  document.getElementById('telegramLink').href = 'https://t.me/';
+})();
+</script>
+</body>
+</html>
